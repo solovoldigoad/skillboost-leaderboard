@@ -5,6 +5,7 @@ beautifulsoup4==4.12.3
 python-dotenv==1.0.1
 pymongo==4.10.1
 apscheduler==3.10.4
+gunicorn==23.0.0
 
 
 
