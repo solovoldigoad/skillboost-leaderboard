@@ -55,7 +55,11 @@ def _perform_data_refresh():
     with app.app_context(): # Ensure we have application context for logging etc.
         print("🚀 Starting hourly data refresh...")
         try:
-            with open('student.csv', 'r') as file:
+            # Construct the full path to the CSV file
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            csv_path = os.path.join(current_dir, 'student.csv')
+
+            with open(csv_path, 'r') as file:
                 csv_reader = csv.DictReader(file)
                 for student in csv_reader:
                     name = student['User Name']
