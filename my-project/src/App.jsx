@@ -26,7 +26,7 @@ const GoogleSkillsBoostLeaderboard = () => {
       "linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)"
     ];
 
-    fetch('/api/students')
+    fetch('https://skillboost-backend-65uv.onrender.com/api/students')
       .then(res => {
         if (!res.ok) {
           throw new Error('Network response was not ok');
