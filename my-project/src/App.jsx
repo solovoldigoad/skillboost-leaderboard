@@ -26,7 +26,8 @@ const GoogleSkillsBoostLeaderboard = () => {
       "linear-gradient(135deg, #ff6e7f 0%, #bfe9ff 100%)"
     ];
 
-    fetch('http://localhost:5000/api/students')
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    fetch(`${apiBaseUrl}/api/students`)
       .then(res => {
         if (!res.ok) {
           throw new Error('Network response was not ok');

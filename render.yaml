@@ -2,6 +2,11 @@ services:
   - type: web
     name: my-react-app
     env: static
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: my-server
     buildCommand: cd my-project && npm install && npm run build
     staticPublishPath: ./my-project/dist
     routes:
