@@ -6,10 +6,7 @@ services:
     staticPublishPath: ./my-project/dist
     envVars:
       - key: VITE_API_URL
-        fromService:
-          type: web
-          name: my-server
-          property: url
+        value: "https://my-server.onrender.com"
     routes:
       - type: rewrite
         source: /*
