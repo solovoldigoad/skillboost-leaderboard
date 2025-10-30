@@ -31,6 +31,10 @@ db = client['student_leaderboard']  # Database name
 students_collection = db['students']   # Collection name
 # ---------------------
 
+# +++ Add a root route for health checks +++
+@app.route('/', methods=['GET'])
+def index():
+    return jsonify({"message": "Hello! This is the SkillBoost Leaderboard API."})
 
 def get_badge_count(url):
     headers = {'User-Agent': 'Mozilla/5.0'}
