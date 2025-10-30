@@ -9,6 +9,7 @@ services:
         fromService:
           type: web
           name: my-server
+          property: url
     routes:
       - type: rewrite
         source: /*
