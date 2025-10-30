@@ -57,7 +57,7 @@ def _perform_data_refresh():
     This function is called by both the scheduler and the API endpoint.
     """
     with app.app_context(): # Ensure we have application context for logging etc.
-        print("🚀 Starting hourly data refresh...")
+        print("🚀 Starting data refresh...")
         try:
             # Construct the full path to the CSV file
             current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -76,9 +76,9 @@ def _perform_data_refresh():
                         {'$set': {'name': name, 'badges': badge_count, 'profile_url': url}},
                         upsert=True
                     )
-            print("✅ Hourly data refresh completed successfully.")
+            print("✅ Data refresh completed successfully.")
         except Exception as e:
-            print(f"❌ Error during scheduled data refresh: {e}")
+            print(f"❌ Error during data refresh: {e}")
 
 @app.route('/api/students/refresh', methods=['POST'])
 def refresh_students_data():
@@ -103,16 +103,23 @@ def get_students():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-if __name__ == '__main__':
-    # --- Scheduler Setup ---
-    scheduler = BackgroundScheduler()
-    # Schedule the job to run every hour, and also immediately at startup
-    scheduler.add_job(func=_perform_data_refresh, trigger="interval", hours=1, id='refresh_job')
-    scheduler.start()
-    print("🕒 Job scheduler started. Data will refresh every hour.")
+# --- Scheduler Setup & Initial Data Load ---
+# This code now runs when Gunicorn starts the application.
 
-    # Shut down the scheduler when exiting the app
-    atexit.register(lambda: scheduler.shutdown())
-    # ---------------------
+# 1. Run the initial data refresh to populate the database immediately.
+_perform_data_refresh()
+
+# 2. Set up the scheduler to run the refresh job periodically.
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=_perform_data_refresh, trigger="interval", hours=1, id='refresh_job')
+scheduler.start()
+print("🕒 Job scheduler started. Data will refresh every hour.")
+
+# Shut down the scheduler when exiting the app
+atexit.register(lambda: scheduler.shutdown())
+# ---------------------
+
+if __name__ == '__main__':
+    # This block is for local development only now.
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
