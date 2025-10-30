@@ -1,13 +1,22 @@
 services:
   - type: web
-    name: backend
+    name: my-react-app
+    env: static
+    staticPublishPath: ./my-project/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    buildFilter:
+      paths:
+        - my-project/**
+  - type: web
+    name: my-server
     env: python
-    rootDir: Backend
+    region: oregon 
     plan: free
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn --workers 4 --bind 0.0.0.0:$PORT server:app"
-    envVars:
-    - key: PYTHON_VERSION
-      value: 3.11
-    - key: MONGO_URL
-      value: "mongodb+srv://kushchauhan2004_db_user:KAcUtRADAVyzJIgu@cluster0.tkkhv5a.mongodb.net/?appName=Cluster0"
+    buildCommand: pip install -r ./Backend/requirements.txt
+    startCommand: gunicorn --chdir ./Backend server:app
+    buildFilter:
+      paths:
+        - Backend/**
