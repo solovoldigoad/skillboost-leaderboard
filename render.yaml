@@ -18,7 +18,7 @@ services:
           property: connectionString
 
   #------------------- Frontend Service -------------------
-  - type: static
+  - type: static_site
     name: skillboost-leaderboard-frontend
     plan: free
     branch: feat/deployment-setup
