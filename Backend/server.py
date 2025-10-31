@@ -36,17 +36,51 @@ students_collection = db['students']   # Collection name
 def index():
     return jsonify({"message": "Hello! This is the SkillBoost Leaderboard API."})
 
+ALLOWED_BADGES = [
+    "The Basics of Google Cloud Compute",
+    "Get Started with Cloud Storage",
+    "Get Started with Pub/Sub",
+    "Get Started with API Gateway",
+    "Get Started with Looker",
+    "Get Started with Dataplex",
+    "Get Started with Google Workspace Tools",
+    "App Building with Appsheet",
+    "Develop with Apps Script and AppSheet",
+    "Build a Website on Google Cloud",
+    "Set Up a Google Cloud Network",
+    "Store, Process, and Manage Data on Google Cloud - Console",
+    "Cloud Functions: 3 Ways",
+    "App Engine: 3 Ways",
+    "Cloud Speech API: 3 Ways",
+    "Monitoring in Google Cloud",
+    "Analyze Speech and Language with Google APIs",
+    "Prompt Design in Vertex AI",
+    "Develop GenAI Apps with Gemini and Streamlit",
+    "Gen AI Arcade Game: Level 3"
+]
+
 def get_badge_count(url):
     headers = {'User-Agent': 'Mozilla/5.0'}
     try:
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
-            badge_links = soup.find_all('a', href=lambda x: bool(x) and 'badges' in str(x).lower())
-            return len(badge_links)
+            
+            # This is a more specific selector for the badge cards.
+            badge_cards = soup.find_all('div', class_='profile-badge') 
+            
+            count = 0
+            for card in badge_cards:
+                # Find the title of the badge within the card
+                title_element = card.find('span', class_='ql-body-2')
+                if title_element:
+                    badge_title = title_element.text.strip()
+                    if badge_title in ALLOWED_BADGES:
+                        count += 1
+            return count
         else:
             print(f"Error fetching {url}: Status code {response.status_code}")
-            return -1  # Return -1 or 0 to indicate an error
+            return -1  # Return -1 to indicate an error
     except Exception as e:
         print(f"Error scraping {url}: {str(e)}")
         return -1
