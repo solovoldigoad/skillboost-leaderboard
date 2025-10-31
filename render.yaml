@@ -1,49 +1,32 @@
-
 services:
   #------------------- Backend Service -------------------
   - type: web
     name: skillboost-leaderboard-backend
-    # runtime: python # or node, ruby, etc.
     env: python
     region: oregon 
     plan: free
-    # Specifies the branch to deploy from.
     branch: feat/deployment-setup
-    # Specifies the root directory of the backend service.
     rootDir: ./Backend
-    # Build command for the backend service.
     buildCommand: "pip install -r requirements.txt"
-    # Start command for the backend service.
     startCommand: "gunicorn server:app"
-    # Defines environment variables for the backend service.
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.5
       - key: MONGO_URL
-        # This will be a Render-provided managed MongoDB instance.
         fromDatabase:
           name: skillboost-db
           property: connectionString
 
   #------------------- Frontend Service -------------------
-  - type: web
+  - type: static
     name: skillboost-leaderboard-frontend
-    # runtime: static # or node, python, etc.
-    env: static
-    region: oregon
     plan: free
-    # Specifies the branch to deploy from.
     branch: feat/deployment-setup
-    # Specifies the root directory of the frontend service.
     rootDir: ./my-project
-    # Build command for the frontend service.
     buildCommand: "npm install && npm run build"
-    # The directory where the built static files are located.
     staticPublishPath: ./dist
-    # Defines environment variables for the frontend service.
     envVars:
       - key: VITE_API_URL
-        # This will point to the URL of the deployed backend service.
         value: https://skillboost-leaderboard-backend.onrender.com
 
 #------------------- Database Service -------------------
@@ -51,7 +34,5 @@ databases:
   - name: skillboost-db
     region: oregon
     plan: free
-    # Specifies the database engine to use.
     databaseName: skillboost
-    # Specifies the user for the database.
     user: skillboost
