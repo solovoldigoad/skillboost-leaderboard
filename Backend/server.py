@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 import atexit
 from pymongo import MongoClient
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)  # allow Vite frontend access
@@ -38,8 +39,19 @@ def get_badge_count(url):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
-            badge_links = soup.find_all('a', href=lambda x: bool(x) and 'badges' in str(x).lower())
-            return len(badge_links)
+            badge_Datespans = soup.find_all('span', class_='ql-body-medium l-mbs')
+            badge_dates = [span.text.strip() for span in badge_Datespans]
+            cutoff_date = datetime.strptime("Oct 20, 2025", "%b %d, %Y")
+            valid_count = 0
+            for date_str in badge_dates:
+                import re
+                match = re.search(r"[A-Za-z]{3} \d{1,2}, \d{4}", date_str)
+                if match:
+                    date_part = match.group(0)
+                    badge_date = datetime.strptime(date_part, "%b %d, %Y")
+                    if badge_date >= cutoff_date:
+                        valid_count += 1
+            return valid_count
         else:
             print(f"Error fetching {url}: Status code {response.status_code}")
             return -1  # Return -1 or 0 to indicate an error
