@@ -39,19 +39,19 @@ def get_badge_count(url):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             soup = BeautifulSoup(response.text, 'html.parser')
-            badge_Datespans = soup.find_all('span', class_='ql-body-medium l-mbs')
-            badge_dates = [span.text.strip() for span in badge_Datespans]
-            cutoff_date = datetime.strptime("Oct 20, 2025", "%b %d, %Y")
+               # You may need to adjust this selector based on the site structure!
+            badge_dates = soup.find_all(string=lambda t: t is not None and "Earned" in t)
+            import re
+            # Pattern to match "Oct" or "Nov" with variable spaces
+            date_pattern = re.compile(r"Earned (Oct|Nov)\s+\d{1,2}, 2025")
             valid_count = 0
             for date_str in badge_dates:
-                import re
-                match = re.search(r"[A-Za-z]{3} \d{1,2}, \d{4}", date_str)
+                date_text = str(date_str)
+                match = date_pattern.search(date_text)
                 if match:
-                    date_part = match.group(0)
-                    badge_date = datetime.strptime(date_part, "%b %d, %Y")
-                    if badge_date >= cutoff_date:
-                        valid_count += 1
+                    valid_count += 1
             return valid_count
+
         else:
             print(f"Error fetching {url}: Status code {response.status_code}")
             return -1  # Return -1 or 0 to indicate an error
